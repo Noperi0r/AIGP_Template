@@ -144,7 +144,7 @@ Transform:
   m_GameObject: {fileID: 277841198}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -541,7 +541,7 @@ Transform:
   m_GameObject: {fileID: 738793083}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -713,6 +713,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1357766173}
+  - component: {fileID: 1357766174}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -735,6 +736,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1357766174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357766172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd676f1b793a945488859a6024e0258e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentA: {fileID: 1475817621}
+  agentB: {fileID: 1958932429}
+  spawnPointA: {fileID: 738793084}
+  spawnPointB: {fileID: 277841199}
+  resetDelay: 1.5
+  maxEpisodeTime: 60
 --- !u!1 &1377010331
 GameObject:
   m_ObjectHideFlags: 0
@@ -1013,10 +1032,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 1475817621}
-  target: {fileID: 0}
+  target: {fileID: 1958932429}
   attackRange: 2
   attackDamage: 20
   attackAngle: 90
+  drawAttackRays: 1
 --- !u!114 &1475817619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1037,7 +1057,7 @@ MonoBehaviour:
   body: {fileID: 1475817612}
   cooldownSystem: {fileID: 1475817620}
   character: {fileID: 1475817621}
-  hitDetector: {fileID: 0}
+  hitDetector: {fileID: 1475817618}
 --- !u!114 &1475817620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1067,8 +1087,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 100
-  actionController: {fileID: 0}
-  cooldownSystem: {fileID: 0}
+  actionController: {fileID: 1475817619}
+  cooldownSystem: {fileID: 1475817620}
 --- !u!1 &1594756424
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,6 +1318,10 @@ GameObject:
   - component: {fileID: 1958932426}
   - component: {fileID: 1958932425}
   - component: {fileID: 1958932424}
+  - component: {fileID: 1958932429}
+  - component: {fileID: 1958932430}
+  - component: {fileID: 1958932431}
+  - component: {fileID: 1958932432}
   m_Layer: 0
   m_Name: Agent_B
   m_TagString: Untagged
@@ -1423,6 +1447,76 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1958932429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958932423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ee937ed7a8fe3a479a2d51faee374c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 100
+  actionController: {fileID: 1958932431}
+  cooldownSystem: {fileID: 1958932430}
+--- !u!114 &1958932430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958932423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deab751ebe2394c44bd0f7a18dd2977a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackCooldown: 2.5
+  blockCooldown: 2.5
+  dodgeCooldown: 5
+--- !u!114 &1958932431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958932423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 429d31146bce7d74f9b8f291bfc02bf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 4
+  dodgeImpulse: 7
+  dodgeInvincibleDuration: 0.35
+  blockDuration: 0.75
+  attackDuration: 0.35
+  body: {fileID: 1958932424}
+  cooldownSystem: {fileID: 1958932430}
+  character: {fileID: 1958932429}
+  hitDetector: {fileID: 1958932432}
+--- !u!114 &1958932432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958932423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29856352a169b34e8a54814bcd9a121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 1958932429}
+  target: {fileID: 1475817621}
+  attackRange: 2
+  attackDamage: 20
+  attackAngle: 90
+  drawAttackRays: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
