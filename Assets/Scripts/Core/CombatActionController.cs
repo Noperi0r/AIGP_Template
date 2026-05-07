@@ -6,7 +6,7 @@ using UnityEngine;
 // Common movement and action API used by manual input now, and BT/RL controllers later.
 public class CombatActionController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 4f;
+    [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float dodgeImpulse = 7f;
     [SerializeField] private float dodgeInvincibleDuration = 0.35f;
     [SerializeField] private float blockDuration = 0.75f;

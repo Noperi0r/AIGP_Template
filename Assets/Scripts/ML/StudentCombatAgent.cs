@@ -7,6 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(CooldownSystem))]
 [RequireComponent(typeof(CombatActionController))]
 // ML-Agents template that drives the same CombatActionController API as BT/manual input.
+
 public class StudentCombatAgent : Agent
 {
     public CombatCharacter self;
@@ -18,6 +19,7 @@ public class StudentCombatAgent : Agent
     [SerializeField] private bool resetEpisodeOnBegin = true;
     [SerializeField] private bool isPrimaryResetAgent = true;
     [SerializeField] private bool enableInternalTestReward;
+    [SerializeField] private bool enableStudentTestReward;
     [SerializeField] private float observationDistance = 10f;
 
     private const int MoveStay = 0;
@@ -31,8 +33,15 @@ public class StudentCombatAgent : Agent
     private const int SkillBlock = 2;
     private const int SkillDodge = 3;
 
+    private float previousSelfHealth;
+    private float previousOpponentHealth;
+    private float previousDistanceToOpponent;
+    private bool studentTestRewardStateInitialized;
+
+
     public override void Initialize()
     {
+
         FillDefaultReferences();
         WarnIfMissingReferences();
     }
@@ -48,12 +57,15 @@ public class StudentCombatAgent : Agent
         {
             episodeManager.ResetEpisode();
         }
+
+        InitializeStudentTestRewardState();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         if (self == null || opponent == null)
         {
+            Debug.Log("CollectObservations returned early.");
             AddEmptyObservations(sensor);
             return;
         }
@@ -88,6 +100,7 @@ public class StudentCombatAgent : Agent
     {
         if (actionController == null || actions.DiscreteActions.Length < 2)
         {
+            Debug.Log("OnActionReceived returned early.");
             return;
         }
 
@@ -102,6 +115,11 @@ public class StudentCombatAgent : Agent
         if (enableInternalTestReward)
         {
             AddReward(-0.001f);
+        }
+
+        if (enableStudentTestReward)
+        {
+            AddStudentTestReward();
         }
 
         CheckEpisodeEndForAgent();
@@ -206,6 +224,72 @@ public class StudentCombatAgent : Agent
         }
 
         EndEpisode();
+    }
+
+    private void InitializeStudentTestRewardState()
+    {
+        if (self == null || opponent == null)
+        {
+            studentTestRewardStateInitialized = false;
+            return;
+        }
+
+        previousSelfHealth = self.CurrentHealth;
+        previousOpponentHealth = opponent.CurrentHealth;
+        previousDistanceToOpponent = GetDistanceToOpponent();
+        studentTestRewardStateInitialized = true;
+    }
+
+    private void AddStudentTestReward()
+    {
+        if (self == null || opponent == null)
+        {
+            studentTestRewardStateInitialized = false;
+            return;
+        }
+
+        if (!studentTestRewardStateInitialized)
+        {
+            InitializeStudentTestRewardState();
+            return;
+        }
+
+        if (opponent.CurrentHealth < previousOpponentHealth)
+        {
+            AddReward(0.2f);
+        }
+
+        float currentDistanceToOpponent = GetDistanceToOpponent();
+        if (currentDistanceToOpponent < previousDistanceToOpponent)
+        {
+            AddReward(0.1f);
+        }
+
+        if (currentDistanceToOpponent > previousDistanceToOpponent)
+        {
+            AddReward(-0.1f);
+        }
+
+        if (self.CurrentHealth < previousSelfHealth)
+        {
+            AddReward(-0.1f);
+        }
+
+        previousSelfHealth = self.CurrentHealth;
+        previousOpponentHealth = opponent.CurrentHealth;
+        previousDistanceToOpponent = currentDistanceToOpponent;
+    }
+
+    private float GetDistanceToOpponent()
+    {
+        if (self == null || opponent == null)
+        {
+            return 0f;
+        }
+
+        Vector3 offset = opponent.transform.position - self.transform.position;
+        offset.y = 0f;
+        return offset.magnitude;
     }
 
     private void AddEmptyObservations(VectorSensor sensor)
