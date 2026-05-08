@@ -178,7 +178,11 @@ public class CombatActionController : MonoBehaviour
     {
         IsAttacking = true;
         attackHitResolved = false;
-        Debug.Log($"{name} started attack.");
+        if (!ShouldSuppressCombatDebug())
+        {
+            Debug.Log($"{name} started attack.");
+        }
+
         animatorDriver?.PlayAttack();
 
         if (animatorDriver == null || !useAnimationEventHit)
@@ -189,20 +193,32 @@ public class CombatActionController : MonoBehaviour
         yield return new WaitForSeconds(attackDuration);
 
         IsAttacking = false;
-        Debug.Log($"{name} ended attack.");
+        if (!ShouldSuppressCombatDebug())
+        {
+            Debug.Log($"{name} ended attack.");
+        }
+
         attackRoutine = null;
     }
 
     private IEnumerator BlockRoutine()
     {
         IsBlocking = true;
-        Debug.Log($"{name} started block.");
+        if (!ShouldSuppressCombatDebug())
+        {
+            Debug.Log($"{name} started block.");
+        }
+
         animatorDriver?.SetBlocking(true);
 
         yield return new WaitForSeconds(blockDuration);
 
         IsBlocking = false;
-        Debug.Log($"{name} ended block.");
+        if (!ShouldSuppressCombatDebug())
+        {
+            Debug.Log($"{name} ended block.");
+        }
+
         animatorDriver?.SetBlocking(false);
         blockRoutine = null;
     }
@@ -210,15 +226,40 @@ public class CombatActionController : MonoBehaviour
     private IEnumerator DodgeRoutine(Vector3 direction)
     {
         IsInvincible = true;
-        Debug.Log($"{name} started dodge.");
+        if (!ShouldSuppressCombatDebug())
+        {
+            Debug.Log($"{name} started dodge.");
+        }
+
         animatorDriver?.PlayDodge();
         body.AddForce(direction * dodgeImpulse, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(dodgeInvincibleDuration);
 
         IsInvincible = false;
-        Debug.Log($"{name} ended dodge.");
+        if (!ShouldSuppressCombatDebug())
+        {
+            Debug.Log($"{name} ended dodge.");
+        }
+
         dodgeRoutine = null;
+    }
+
+    private bool ShouldSuppressCombatDebug()
+    {
+        StudentCombatAgent[] agents = FindObjectsByType<StudentCombatAgent>(
+            FindObjectsInactive.Exclude,
+            FindObjectsSortMode.None);
+
+        foreach (StudentCombatAgent agent in agents)
+        {
+            if (agent.enabled)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool CanAct()

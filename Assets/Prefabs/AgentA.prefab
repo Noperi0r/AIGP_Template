@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 51829aafe6a00294b939c9adc49b8adb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.172636
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 51829aafe6a00294b939c9adc49b8adb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -18,7 +18,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 51829aafe6a00294b939c9adc49b8adb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.1586256
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 51829aafe6a00294b939c9adc49b8adb, type: 3}
       propertyPath: m_LocalRotation.w
@@ -117,9 +117,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 51829aafe6a00294b939c9adc49b8adb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3707628258670134852}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 51829aafe6a00294b939c9adc49b8adb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5273038365194882269}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 51829aafe6a00294b939c9adc49b8adb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 447796171080211290}
@@ -262,8 +259,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 429d31146bce7d74f9b8f291bfc02bf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
-  dodgeImpulse: 7
+  moveSpeed: 2
+  dodgeImpulse: 2
   dodgeInvincibleDuration: 0.35
   blockDuration: 0.75
   attackDuration: 0.75
@@ -273,19 +270,6 @@ MonoBehaviour:
   hitDetector: {fileID: 1765633739275492742}
   animatorDriver: {fileID: 4917087397570549635}
   useAnimationEventHit: 1
---- !u!114 &5273038365194882269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1895096263345252756}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9272d6cb09ce34b40a5fff70e99844b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionController: {fileID: 3707628258670134852}
 --- !u!114 &447796171080211290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,8 +306,8 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 0500000004000000
-    VectorActionSize: 0500000004000000
+      BranchSizes: 04000000
+    VectorActionSize: 04000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -360,8 +344,9 @@ MonoBehaviour:
   resetEpisodeOnBegin: 0
   isPrimaryResetAgent: 0
   enableInternalTestReward: 0
-  enableStudentTestReward: 1
+  enableStudentAttackTestReward: 0
   observationDistance: 10
+  closeRangeSkillDistance: 3
 --- !u!114 &5963434143807491845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -374,7 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 5
+  DecisionPeriod: 2
   DecisionStep: 0
   TakeActionsBetweenDecisions: 1
 --- !u!95 &5181180792668203348 stripped

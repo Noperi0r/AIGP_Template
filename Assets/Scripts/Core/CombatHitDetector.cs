@@ -32,9 +32,11 @@ public class CombatHitDetector : MonoBehaviour
 
     public CombatHitResult TryHit()
     {
+        bool suppressCombatDebug = ShouldSuppressCombatDebug();
+
         if (target == null)
         {
-            if (drawAttackRays)
+            if (drawAttackRays && !suppressCombatDebug)
             {
                 DrawAttackDebugRays(Vector3.zero, false);
             }
@@ -45,38 +47,58 @@ public class CombatHitDetector : MonoBehaviour
         Vector3 toTarget = target.transform.position - transform.position;
         float distance = toTarget.magnitude;
 
-        if (drawAttackRays)
+        if (drawAttackRays && !suppressCombatDebug)
         {
             DrawAttackDebugRays(toTarget, true);
         }
 
         if (distance > attackRange)
         {
-            Debug.Log($"{name} attack out of range. Target: {target.name}");
+            if (!suppressCombatDebug)
+            {
+                Debug.Log($"{name} attack out of range. Target: {target.name}");
+            }
+
             return CombatHitResult.OutOfRange;
         }
 
         if (!IsInsideAttackAngle(toTarget))
         {
-            Debug.Log($"{name} attack missed outside angle. Target: {target.name}");
+            if (!suppressCombatDebug)
+            {
+                Debug.Log($"{name} attack missed outside angle. Target: {target.name}");
+            }
+
             return CombatHitResult.OutsideAngle;
         }
 
         CombatActionController targetAction = target.ActionController;
         if (targetAction != null && targetAction.IsInvincible)
         {
-            Debug.Log($"{name} attack dodged by {target.name}.");
+            if (!suppressCombatDebug)
+            {
+                Debug.Log($"{name} attack dodged by {target.name}.");
+            }
+
             return CombatHitResult.Invincible;
         }
 
         if (targetAction != null && targetAction.IsBlocking)
         {
-            Debug.Log($"{name} attack blocked by {target.name}.");  
+            if (!suppressCombatDebug)
+            {
+                Debug.Log($"{name} attack blocked by {target.name}.");
+            }
+
             return CombatHitResult.Blocked;
         }
 
         target.TakeDamage(attackDamage);
-        Debug.Log($"{name} hit {target.name} for {attackDamage} damage. HP: {target.CurrentHealth}/{target.MaxHealth}");
+        if (!suppressCombatDebug)
+        {
+            Debug.Log($"{name} hit {target.name} for {attackDamage} damage. HP: {target.CurrentHealth}/{target.MaxHealth}");
+        }
+
         return CombatHitResult.Hit;
     }
 
@@ -171,5 +193,22 @@ public class CombatHitDetector : MonoBehaviour
         {
             owner = GetComponent<CombatCharacter>();
         }
+    }
+
+    private bool ShouldSuppressCombatDebug()
+    {
+        StudentCombatAgent[] agents = FindObjectsByType<StudentCombatAgent>(
+            FindObjectsInactive.Exclude,
+            FindObjectsSortMode.None);
+
+        foreach (StudentCombatAgent agent in agents)
+        {
+            if (agent.enabled)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
