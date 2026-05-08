@@ -102,13 +102,14 @@ public class BaselineDefenderBT : MonoBehaviour
 
     private BTNodeStatus DodgeAway()
     {
+        actionController.Face(GetDirectionToTarget());
         actionController.Dodge(-GetDirectionToTarget());
         return BTNodeStatus.Success;
     }
 
     private BTNodeStatus Attack()
     {
-        actionController.Move(GetDirectionToTarget());
+        actionController.Face(GetDirectionToTarget());
         actionController.Attack();
         return BTNodeStatus.Success;
     }

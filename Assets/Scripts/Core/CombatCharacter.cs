@@ -41,6 +41,7 @@ public class CombatCharacter : MonoBehaviour
 
         float safeAmount = Mathf.Max(0f, amount);
         currentHealth = Mathf.Clamp(currentHealth - safeAmount, 0f, maxHealth);
+        actionController?.PlayHitReaction();
     }
 
     public void Heal(float amount)

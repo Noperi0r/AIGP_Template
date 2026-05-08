@@ -7,7 +7,7 @@ using UnityEngine;
 public class CombatActionController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float dodgeImpulse = 7f;
+    [SerializeField] private float dodgeImpulse = 2f;
     [SerializeField] private float dodgeInvincibleDuration = 0.35f;
     [SerializeField] private float blockDuration = 0.75f;
     [SerializeField] private float attackDuration = 0.35f;
@@ -16,10 +16,14 @@ public class CombatActionController : MonoBehaviour
     [SerializeField] private CooldownSystem cooldownSystem;
     [SerializeField] private CombatCharacter character;
     [SerializeField] private CombatHitDetector hitDetector;
+    [SerializeField] private CombatAnimatorDriver animatorDriver;
+    [SerializeField] private bool useAnimationEventHit = true;
 
     private Coroutine attackRoutine;
     private Coroutine blockRoutine;
     private Coroutine dodgeRoutine;
+    private bool attackHitResolved;
+    private int lastMoveFrame = -1;
 
     public float MoveSpeed
     {
@@ -54,6 +58,7 @@ public class CombatActionController : MonoBehaviour
     public bool IsBlocking { get; private set; }
     public bool IsInvincible { get; private set; }
     public bool IsAttacking { get; private set; }
+    public bool IsBusy => IsAttacking || IsBlocking || IsInvincible;
 
     private void Awake()
     {
@@ -65,9 +70,26 @@ public class CombatActionController : MonoBehaviour
         FillDefaultReferences();
     }
 
+    private void LateUpdate()
+    {
+        animatorDriver?.SetMoving(lastMoveFrame == Time.frameCount && !IsBusy);
+    }
+
     public void Move(Vector3 direction)
     {
-        if (character != null && character.IsDead)
+        if (!TryGetMoveDirection(direction, out Vector3 horizontalDirection))
+        {
+            return;
+        }
+
+        body.MovePosition(body.position + horizontalDirection * moveSpeed * Time.deltaTime);
+        Face(horizontalDirection);
+        lastMoveFrame = Time.frameCount;
+    }
+
+    public void Face(Vector3 direction)
+    {
+        if (!CanAct() || IsBusy)
         {
             return;
         }
@@ -79,13 +101,12 @@ public class CombatActionController : MonoBehaviour
         }
 
         horizontalDirection.Normalize();
-        body.MovePosition(body.position + horizontalDirection * moveSpeed * Time.deltaTime);
         transform.rotation = Quaternion.LookRotation(horizontalDirection, Vector3.up);
     }
 
     public void Attack()
     {
-        if (!CanAct() || IsAttacking || !cooldownSystem.IsAttackReady())
+        if (!CanAct() || IsBusy || !cooldownSystem.IsAttackReady())
         {
             return;
         }
@@ -96,7 +117,7 @@ public class CombatActionController : MonoBehaviour
 
     public void Block()
     {
-        if (!CanAct() || IsBlocking || !cooldownSystem.IsBlockReady())
+        if (!CanAct() || IsBusy || !cooldownSystem.IsBlockReady())
         {
             return;
         }
@@ -107,7 +128,7 @@ public class CombatActionController : MonoBehaviour
 
     public void Dodge(Vector3 direction)
     {
-        if (!CanAct() || IsInvincible || !cooldownSystem.IsDodgeReady())
+        if (!CanAct() || IsBusy || !cooldownSystem.IsDodgeReady())
         {
             return;
         }
@@ -132,13 +153,38 @@ public class CombatActionController : MonoBehaviour
         IsAttacking = false;
         IsBlocking = false;
         IsInvincible = false;
+        attackHitResolved = false;
+        lastMoveFrame = -1;
+        animatorDriver?.ResetAnimationState();
+    }
+
+    public void OnAttackHitFrame()
+    {
+        if (!IsAttacking || attackHitResolved)
+        {
+            return;
+        }
+
+        attackHitResolved = true;
+        hitDetector?.TryHit();
+    }
+
+    public void PlayHitReaction()
+    {
+        animatorDriver?.PlayHit();
     }
 
     private IEnumerator AttackRoutine()
     {
         IsAttacking = true;
+        attackHitResolved = false;
         Debug.Log($"{name} started attack.");
-        hitDetector?.TryHit();
+        animatorDriver?.PlayAttack();
+
+        if (animatorDriver == null || !useAnimationEventHit)
+        {
+            OnAttackHitFrame();
+        }
 
         yield return new WaitForSeconds(attackDuration);
 
@@ -151,11 +197,13 @@ public class CombatActionController : MonoBehaviour
     {
         IsBlocking = true;
         Debug.Log($"{name} started block.");
+        animatorDriver?.SetBlocking(true);
 
         yield return new WaitForSeconds(blockDuration);
 
         IsBlocking = false;
         Debug.Log($"{name} ended block.");
+        animatorDriver?.SetBlocking(false);
         blockRoutine = null;
     }
 
@@ -163,6 +211,7 @@ public class CombatActionController : MonoBehaviour
     {
         IsInvincible = true;
         Debug.Log($"{name} started dodge.");
+        animatorDriver?.PlayDodge();
         body.AddForce(direction * dodgeImpulse, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(dodgeInvincibleDuration);
@@ -175,6 +224,18 @@ public class CombatActionController : MonoBehaviour
     private bool CanAct()
     {
         return character == null || !character.IsDead;
+    }
+
+    private bool TryGetMoveDirection(Vector3 direction, out Vector3 horizontalDirection)
+    {
+        horizontalDirection = Flatten(direction);
+        if (!CanAct() || IsBusy || horizontalDirection.sqrMagnitude <= 0.0001f)
+        {
+            return false;
+        }
+
+        horizontalDirection.Normalize();
+        return true;
     }
 
     private Vector3 Flatten(Vector3 direction)
@@ -203,6 +264,11 @@ public class CombatActionController : MonoBehaviour
         if (hitDetector == null)
         {
             hitDetector = GetComponent<CombatHitDetector>();
+        }
+
+        if (animatorDriver == null)
+        {
+            animatorDriver = GetComponent<CombatAnimatorDriver>();
         }
     }
 
