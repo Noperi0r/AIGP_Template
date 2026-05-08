@@ -19,14 +19,9 @@ public class StudentCombatAgent : Agent
     [SerializeField] private bool resetEpisodeOnBegin = true;
     [SerializeField] private bool isPrimaryResetAgent = true;
     [SerializeField] private bool enableInternalTestReward;
-    [SerializeField] private bool enableStudentTestReward;
+    [SerializeField] private bool enableStudentAttackTestReward;
     [SerializeField] private float observationDistance = 10f;
-
-    private const int MoveStay = 0;
-    private const int MoveForward = 1;
-    private const int MoveBackward = 2;
-    private const int MoveLeft = 3;
-    private const int MoveRight = 4;
+    [SerializeField] private float closeRangeSkillDistance = 3f;
 
     private const int SkillNone = 0;
     private const int SkillAttack = 1;
@@ -98,15 +93,14 @@ public class StudentCombatAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        if (actionController == null || actions.DiscreteActions.Length < 2)
+        if (actionController == null || actions.DiscreteActions.Length < 1)
         {
             Debug.Log("OnActionReceived returned early.");
             return;
         }
 
-        int moveAction = actions.DiscreteActions[0];
-        int skillAction = actions.DiscreteActions[1];
-        Vector3 moveDirection = GetMoveDirection(moveAction);
+        int skillAction = GetSkillAction(actions.DiscreteActions);
+        Vector3 moveDirection = GetDirectionToOpponent();
 
         actionController.Move(moveDirection);
         ExecuteSkill(skillAction, moveDirection);
@@ -117,9 +111,9 @@ public class StudentCombatAgent : Agent
             AddReward(-0.001f);
         }
 
-        if (enableStudentTestReward)
+        if (enableStudentAttackTestReward)
         {
-            AddStudentTestReward();
+            AddStudentAttackTestReward(skillAction);
         }
 
         CheckEpisodeEndForAgent();
@@ -130,58 +124,59 @@ public class StudentCombatAgent : Agent
         ActionSegment<int> discreteActions = actionsOut.DiscreteActions;
         if (discreteActions.Length < 2)
         {
+            if (discreteActions.Length < 1)
+            {
+                return;
+            }
+
+            discreteActions[0] = ReadSkillInput();
             return;
         }
 
-        discreteActions[0] = MoveStay;
-        discreteActions[1] = SkillNone;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            discreteActions[0] = MoveForward;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            discreteActions[0] = MoveBackward;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            discreteActions[0] = MoveLeft;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            discreteActions[0] = MoveRight;
-        }
-
-        if (Input.GetKey(KeyCode.J))
-        {
-            discreteActions[1] = SkillAttack;
-        }
-        else if (Input.GetKey(KeyCode.K))
-        {
-            discreteActions[1] = SkillBlock;
-        }
-        else if (Input.GetKey(KeyCode.L))
-        {
-            discreteActions[1] = SkillDodge;
-        }
+        discreteActions[0] = 0;
+        discreteActions[1] = ReadSkillInput();
     }
 
-    private Vector3 GetMoveDirection(int moveAction)
+    private int ReadSkillInput()
     {
-        switch (moveAction)
+        if (Input.GetKey(KeyCode.J))
         {
-            case MoveForward:
-                return transform.forward;
-            case MoveBackward:
-                return -transform.forward;
-            case MoveLeft:
-                return -transform.right;
-            case MoveRight:
-                return transform.right;
-            default:
-                return Vector3.zero;
+            return SkillAttack;
         }
+
+        if (Input.GetKey(KeyCode.K))
+        {
+            return SkillBlock;
+        }
+
+        if (Input.GetKey(KeyCode.L))
+        {
+            return SkillDodge;
+        }
+
+        return SkillNone;
+    }
+
+    private int GetSkillAction(ActionSegment<int> discreteActions)
+    {
+        if (discreteActions.Length >= 2)
+        {
+            return discreteActions[1];
+        }
+
+        return discreteActions[0];
+    }
+
+    private Vector3 GetDirectionToOpponent()
+    {
+        if (self == null || opponent == null)
+        {
+            return transform.forward;
+        }
+
+        Vector3 offset = opponent.transform.position - self.transform.position;
+        offset.y = 0f;
+        return offset.sqrMagnitude <= 0.0001f ? transform.forward : offset.normalized;
     }
 
     private void ExecuteSkill(int skillAction, Vector3 moveDirection)
@@ -240,7 +235,7 @@ public class StudentCombatAgent : Agent
         studentTestRewardStateInitialized = true;
     }
 
-    private void AddStudentTestReward()
+    private void AddStudentAttackTestReward(int skillAction)
     {
         if (self == null || opponent == null)
         {
@@ -260,14 +255,20 @@ public class StudentCombatAgent : Agent
         }
 
         float currentDistanceToOpponent = GetDistanceToOpponent();
+        if (currentDistanceToOpponent > closeRangeSkillDistance
+            && (skillAction == SkillAttack || skillAction == SkillDodge))
+        {
+            AddReward(-0.3f);
+        }
+
         if (currentDistanceToOpponent < previousDistanceToOpponent)
         {
-            AddReward(0.1f);
+            AddReward(0.2f);
         }
 
         if (currentDistanceToOpponent > previousDistanceToOpponent)
         {
-            AddReward(-0.1f);
+            AddReward(-0.2f);
         }
 
         if (self.CurrentHealth < previousSelfHealth)
