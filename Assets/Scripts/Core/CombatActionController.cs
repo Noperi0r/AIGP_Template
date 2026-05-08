@@ -137,32 +137,38 @@ public class CombatActionController : MonoBehaviour
     private IEnumerator AttackRoutine()
     {
         IsAttacking = true;
+        Debug.Log($"{name} started attack.");
         hitDetector?.TryHit();
 
         yield return new WaitForSeconds(attackDuration);
 
         IsAttacking = false;
+        Debug.Log($"{name} ended attack.");
         attackRoutine = null;
     }
 
     private IEnumerator BlockRoutine()
     {
         IsBlocking = true;
+        Debug.Log($"{name} started block.");
 
         yield return new WaitForSeconds(blockDuration);
 
         IsBlocking = false;
+        Debug.Log($"{name} ended block.");
         blockRoutine = null;
     }
 
     private IEnumerator DodgeRoutine(Vector3 direction)
     {
         IsInvincible = true;
+        Debug.Log($"{name} started dodge.");
         body.AddForce(direction * dodgeImpulse, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(dodgeInvincibleDuration);
 
         IsInvincible = false;
+        Debug.Log($"{name} ended dodge.");
         dodgeRoutine = null;
     }
 

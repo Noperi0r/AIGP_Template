@@ -89,7 +89,7 @@ public class BaselineAttackerBT : MonoBehaviour
     private BTNodeStatus MoveTowardTarget()
     {
         actionController.Move(GetDirectionToTarget());
-        return BTNodeStatus.Running;
+        return BTNodeStatus.Success;
     }
 
     private bool IsTargetInAttackDistance()

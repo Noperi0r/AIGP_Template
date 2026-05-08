@@ -12,7 +12,6 @@ public class BaselineDefenderBT : MonoBehaviour
     [SerializeField] private CooldownSystem cooldownSystem;
     [SerializeField] private float closeDistance = 2.0f;
     [SerializeField] private float preferredDistance = 3.0f;
-    [SerializeField] private float facingAngle = 60f;
     [SerializeField] private float lowHealthRatio = 0.3f;
 
     private BTNode root;
@@ -44,16 +43,15 @@ public class BaselineDefenderBT : MonoBehaviour
             new SequenceNode(
                 new ConditionNode(ShouldDodge),
                 new ActionNode(DodgeAway)),
-            new RandomSelectorNode(
-                new SequenceNode(
-                    new ConditionNode(CanBlockCloseTarget),
-                    new ActionNode(Block)),
-                new SequenceNode(
-                    new ConditionNode(CanDodgeCloseTarget),
-                    new ActionNode(DodgeAway)),
-                new SequenceNode(
-                    new ConditionNode(CanCounterAttack),
-                    new ActionNode(Attack))),
+            new SequenceNode(
+                new ConditionNode(CanCounterAttack),
+                new ActionNode(Attack)),
+            new SequenceNode(
+                new ConditionNode(CanBlockIncomingAttack),
+                new ActionNode(Block)),
+            new SequenceNode(
+                new ConditionNode(CanDodgeCloseTarget),
+                new ActionNode(DodgeAway)),
             new ActionNode(MaintainDistance));
     }
 
@@ -74,11 +72,12 @@ public class BaselineDefenderBT : MonoBehaviour
             && cooldownSystem.IsDodgeReady();
     }
 
-    private bool CanBlockCloseTarget()
+    private bool CanBlockIncomingAttack()
     {
         return IsTargetClose()
             && cooldownSystem != null
-            && cooldownSystem.IsBlockReady();
+            && cooldownSystem.IsBlockReady()
+            && (IsTargetAttacking() || IsTargetAttackReady());
     }
 
     private bool CanDodgeCloseTarget()
@@ -91,7 +90,6 @@ public class BaselineDefenderBT : MonoBehaviour
     private bool CanCounterAttack()
     {
         return IsTargetClose()
-            && IsFacingTarget()
             && cooldownSystem != null
             && cooldownSystem.IsAttackReady();
     }
@@ -110,6 +108,7 @@ public class BaselineDefenderBT : MonoBehaviour
 
     private BTNodeStatus Attack()
     {
+        actionController.Move(GetDirectionToTarget());
         actionController.Attack();
         return BTNodeStatus.Success;
     }
@@ -122,7 +121,7 @@ public class BaselineDefenderBT : MonoBehaviour
             actionController.Move(-GetDirectionToTarget());
         }
 
-        return BTNodeStatus.Running;
+        return BTNodeStatus.Success;
     }
 
     private bool IsTargetClose()
@@ -130,17 +129,16 @@ public class BaselineDefenderBT : MonoBehaviour
         return GetHorizontalOffsetToTarget().magnitude <= closeDistance;
     }
 
-    private bool IsFacingTarget()
+    private bool IsTargetAttacking()
     {
-        Vector3 direction = GetDirectionToTarget();
-        if (direction.sqrMagnitude <= 0.0001f)
-        {
-            return true;
-        }
+        CombatActionController targetAction = target.ActionController;
+        return targetAction != null && targetAction.IsAttacking;
+    }
 
-        Vector3 forward = transform.forward;
-        forward.y = 0f;
-        return Vector3.Angle(forward, direction) <= facingAngle;
+    private bool IsTargetAttackReady()
+    {
+        CooldownSystem targetCooldown = target.CooldownSystem;
+        return targetCooldown != null && targetCooldown.IsAttackReady();
     }
 
     private Vector3 GetDirectionToTarget()
