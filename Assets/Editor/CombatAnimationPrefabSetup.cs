@@ -69,7 +69,7 @@ public static class CombatAnimationPrefabSetup
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("Configured animated AgentA/AgentB prefabs. Set opponent references manually in scene instances and add OnAttackHitFrame Animation Events to attack clips.");
+        Debug.Log("Configured animated AgentA/AgentB prefabs. Set opponent references manually in scene instances and add OnAttackHitFrame/OnAttackEnd Animation Events to attack clips.");
     }
 
     public static void ConfigureAllForBatch()
@@ -279,13 +279,11 @@ public static class CombatAnimationPrefabSetup
             SetFloat(actionController, "dodgeImpulse", 7f);
             SetFloat(actionController, "dodgeInvincibleDuration", 0.35f);
             SetFloat(actionController, "blockDuration", 0.75f);
-            SetFloat(actionController, "attackDuration", 0.75f);
             SetObject(actionController, "body", body);
             SetObject(actionController, "cooldownSystem", cooldownSystem);
             SetObject(actionController, "character", character);
             SetObject(actionController, "hitDetector", hitDetector);
             SetObject(actionController, "animatorDriver", animatorDriver);
-            SetBool(actionController, "useAnimationEventHit", true);
 
             SetObject(character, "actionController", actionController);
             SetObject(character, "cooldownSystem", cooldownSystem);

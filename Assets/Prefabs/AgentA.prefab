@@ -263,13 +263,11 @@ MonoBehaviour:
   dodgeImpulse: 2
   dodgeInvincibleDuration: 0.35
   blockDuration: 0.75
-  attackDuration: 0.75
   body: {fileID: 8030218399472999521}
   cooldownSystem: {fileID: 938506023348638990}
   character: {fileID: 3429851576349032848}
   hitDetector: {fileID: 1765633739275492742}
   animatorDriver: {fileID: 4917087397570549635}
-  useAnimationEventHit: 1
 --- !u!114 &447796171080211290
 MonoBehaviour:
   m_ObjectHideFlags: 0

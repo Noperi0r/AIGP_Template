@@ -2311,13 +2311,11 @@ MonoBehaviour:
   dodgeImpulse: 7
   dodgeInvincibleDuration: 0.35
   blockDuration: 0.75
-  attackDuration: 0.35
   body: {fileID: 1475817612}
   cooldownSystem: {fileID: 1475817620}
   character: {fileID: 1475817621}
   hitDetector: {fileID: 1475817618}
   animatorDriver: {fileID: 0}
-  useAnimationEventHit: 1
 --- !u!114 &1475817620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3016,13 +3014,11 @@ MonoBehaviour:
   dodgeImpulse: 7
   dodgeInvincibleDuration: 0.35
   blockDuration: 0.75
-  attackDuration: 0.35
   body: {fileID: 1958932424}
   cooldownSystem: {fileID: 1958932430}
   character: {fileID: 1958932429}
   hitDetector: {fileID: 1958932432}
   animatorDriver: {fileID: 0}
-  useAnimationEventHit: 1
 --- !u!114 &1958932432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3232,7 +3228,7 @@ PrefabInstance:
       objectReference: {fileID: 1048873681}
     - target: {fileID: 447796171080211290, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1227068919629312814, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3276,7 +3272,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1751859255697975558, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1765633739275492742, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: target
@@ -3292,7 +3288,7 @@ PrefabInstance:
       objectReference: {fileID: 1048873681}
     - target: {fileID: 2989731715636705689, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2989731715636705689, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: episodeManager
@@ -3312,7 +3308,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5963434143807491845, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

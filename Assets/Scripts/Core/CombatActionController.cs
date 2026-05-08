@@ -10,16 +10,13 @@ public class CombatActionController : MonoBehaviour
     [SerializeField] private float dodgeImpulse = 2f;
     [SerializeField] private float dodgeInvincibleDuration = 0.35f;
     [SerializeField] private float blockDuration = 0.75f;
-    [SerializeField] private float attackDuration = 0.35f;
 
     [SerializeField] private Rigidbody body;
     [SerializeField] private CooldownSystem cooldownSystem;
     [SerializeField] private CombatCharacter character;
     [SerializeField] private CombatHitDetector hitDetector;
     [SerializeField] private CombatAnimatorDriver animatorDriver;
-    [SerializeField] private bool useAnimationEventHit = true;
 
-    private Coroutine attackRoutine;
     private Coroutine blockRoutine;
     private Coroutine dodgeRoutine;
     private bool attackHitResolved;
@@ -47,12 +44,6 @@ public class CombatActionController : MonoBehaviour
     {
         get => blockDuration;
         set => blockDuration = Mathf.Max(0f, value);
-    }
-
-    public float AttackDuration
-    {
-        get => attackDuration;
-        set => attackDuration = Mathf.Max(0f, value);
     }
 
     public bool IsBlocking { get; private set; }
@@ -112,7 +103,14 @@ public class CombatActionController : MonoBehaviour
         }
 
         cooldownSystem.TriggerAttackCooldown();
-        attackRoutine = StartCoroutine(AttackRoutine());
+        IsAttacking = true;
+        attackHitResolved = false;
+        if (!ShouldSuppressCombatDebug())
+        {
+            Debug.Log($"{name} started attack.");
+        }
+
+        animatorDriver?.PlayAttack();
     }
 
     public void Block()
@@ -146,14 +144,12 @@ public class CombatActionController : MonoBehaviour
 
     public void ResetActionState()
     {
-        StopRunningCoroutine(ref attackRoutine);
         StopRunningCoroutine(ref blockRoutine);
         StopRunningCoroutine(ref dodgeRoutine);
 
-        IsAttacking = false;
+        EndAttack(logEnd: false);
         IsBlocking = false;
         IsInvincible = false;
-        attackHitResolved = false;
         lastMoveFrame = -1;
         animatorDriver?.ResetAnimationState();
     }
@@ -169,36 +165,31 @@ public class CombatActionController : MonoBehaviour
         hitDetector?.TryHit();
     }
 
+    public void OnAttackEnd()
+    {
+        EndAttack(logEnd: true);
+    }
+
     public void PlayHitReaction()
     {
+        EndAttack(logEnd: true);
         animatorDriver?.PlayHit();
     }
 
-    private IEnumerator AttackRoutine()
+    private void EndAttack(bool logEnd)
     {
-        IsAttacking = true;
-        attackHitResolved = false;
-        if (!ShouldSuppressCombatDebug())
+        if (!IsAttacking)
         {
-            Debug.Log($"{name} started attack.");
+            attackHitResolved = false;
+            return;
         }
-
-        animatorDriver?.PlayAttack();
-
-        if (animatorDriver == null || !useAnimationEventHit)
-        {
-            OnAttackHitFrame();
-        }
-
-        yield return new WaitForSeconds(attackDuration);
 
         IsAttacking = false;
-        if (!ShouldSuppressCombatDebug())
+        attackHitResolved = false;
+        if (logEnd && !ShouldSuppressCombatDebug())
         {
             Debug.Log($"{name} ended attack.");
         }
-
-        attackRoutine = null;
     }
 
     private IEnumerator BlockRoutine()

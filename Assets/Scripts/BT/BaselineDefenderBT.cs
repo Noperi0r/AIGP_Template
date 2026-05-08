@@ -44,14 +44,14 @@ public class BaselineDefenderBT : MonoBehaviour
                 new ConditionNode(ShouldDodge),
                 new ActionNode(DodgeAway)),
             new SequenceNode(
-                new ConditionNode(CanCounterAttack),
-                new ActionNode(Attack)),
-            new SequenceNode(
                 new ConditionNode(CanBlockIncomingAttack),
                 new ActionNode(Block)),
             new SequenceNode(
                 new ConditionNode(CanDodgeCloseTarget),
                 new ActionNode(DodgeAway)),
+            new SequenceNode(
+                new ConditionNode(CanCounterAttack),
+                new ActionNode(Attack)),
             new ActionNode(MaintainDistance));
     }
 
