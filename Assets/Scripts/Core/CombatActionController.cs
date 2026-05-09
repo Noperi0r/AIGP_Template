@@ -20,6 +20,8 @@ public class CombatActionController : MonoBehaviour
     private Coroutine blockRoutine;
     private Coroutine dodgeRoutine;
     private bool attackHitResolved;
+    private bool isRotationLocked;
+    private Vector3 lockedFacingDirection;
     private int lastMoveFrame = -1;
 
     public float MoveSpeed
@@ -64,6 +66,7 @@ public class CombatActionController : MonoBehaviour
     private void LateUpdate()
     {
         animatorDriver?.SetMoving(lastMoveFrame == Time.frameCount && !IsBusy);
+        ApplyRotationLock();
     }
 
     public void Move(Vector3 direction)
@@ -105,6 +108,7 @@ public class CombatActionController : MonoBehaviour
         cooldownSystem.TriggerAttackCooldown();
         IsAttacking = true;
         attackHitResolved = false;
+        LockRotation(transform.forward);
         if (!ShouldSuppressCombatDebug())
         {
             Debug.Log($"{name} started attack.");
@@ -115,13 +119,29 @@ public class CombatActionController : MonoBehaviour
 
     public void Block()
     {
+        Block(transform.forward);
+    }
+
+    public void Block(Vector3 facingDirection)
+    {
         if (!CanAct() || IsBusy || !cooldownSystem.IsBlockReady())
         {
             return;
         }
 
+        LockRotation(facingDirection);
         cooldownSystem.TriggerBlockCooldown();
         blockRoutine = StartCoroutine(BlockRoutine());
+    }
+
+    public void UpdateRotationLock(Vector3 facingDirection)
+    {
+        if (!isRotationLocked)
+        {
+            return;
+        }
+
+        LockRotation(facingDirection);
     }
 
     public void Dodge(Vector3 direction)
@@ -150,6 +170,7 @@ public class CombatActionController : MonoBehaviour
         EndAttack(logEnd: false);
         IsBlocking = false;
         IsInvincible = false;
+        UnlockRotation();
         lastMoveFrame = -1;
         animatorDriver?.ResetAnimationState();
     }
@@ -186,6 +207,7 @@ public class CombatActionController : MonoBehaviour
 
         IsAttacking = false;
         attackHitResolved = false;
+        UnlockRotation();
         if (logEnd && !ShouldSuppressCombatDebug())
         {
             Debug.Log($"{name} ended attack.");
@@ -211,6 +233,7 @@ public class CombatActionController : MonoBehaviour
         }
 
         animatorDriver?.SetBlocking(false);
+        UnlockRotation();
         blockRoutine = null;
     }
 
@@ -274,6 +297,40 @@ public class CombatActionController : MonoBehaviour
     {
         direction.y = 0f;
         return direction;
+    }
+
+    private void LockRotation(Vector3 direction)
+    {
+        Vector3 horizontalDirection = Flatten(direction);
+        if (horizontalDirection.sqrMagnitude <= 0.0001f)
+        {
+            horizontalDirection = Flatten(transform.forward);
+        }
+
+        if (horizontalDirection.sqrMagnitude <= 0.0001f)
+        {
+            return;
+        }
+
+        lockedFacingDirection = horizontalDirection.normalized;
+        isRotationLocked = true;
+        ApplyRotationLock();
+    }
+
+    private void UnlockRotation()
+    {
+        isRotationLocked = false;
+        lockedFacingDirection = Vector3.zero;
+    }
+
+    private void ApplyRotationLock()
+    {
+        if (!isRotationLocked || lockedFacingDirection.sqrMagnitude <= 0.0001f)
+        {
+            return;
+        }
+
+        transform.rotation = Quaternion.LookRotation(lockedFacingDirection, Vector3.up);
     }
 
     private void FillDefaultReferences()

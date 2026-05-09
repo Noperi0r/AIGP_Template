@@ -34,6 +34,11 @@ public class BaselineDefenderBT : MonoBehaviour
             return;
         }
 
+        if (actionController.IsBlocking)
+        {
+            actionController.UpdateRotationLock(GetDirectionToTarget());
+        }
+
         root.Tick();
     }
 
@@ -96,7 +101,7 @@ public class BaselineDefenderBT : MonoBehaviour
 
     private BTNodeStatus Block()
     {
-        actionController.Block();
+        actionController.Block(GetDirectionToTarget());
         return BTNodeStatus.Success;
     }
 
