@@ -1775,7 +1775,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7485290698015744982, guid: 2e8a4702ee7568a4780a46659896e6ff, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.5
+      value: -4.7
       objectReference: {fileID: 0}
     - target: {fileID: 7485290698015744982, guid: 2e8a4702ee7568a4780a46659896e6ff, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2414,12 +2414,6 @@ MonoBehaviour:
   actionController: {fileID: 1475817619}
   cooldownSystem: {fileID: 1475817620}
   episodeManager: {fileID: 1357766174}
-  resetEpisodeOnBegin: 1
-  isPrimaryResetAgent: 1
-  enableInternalTestReward: 0
-  enableStudentAttackTestReward: 1
-  observationDistance: 10
-  closeRangeSkillDistance: 3
 --- !u!114 &1475817626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3228,7 +3222,7 @@ PrefabInstance:
       objectReference: {fileID: 1048873681}
     - target: {fileID: 447796171080211290, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1227068919629312814, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3272,7 +3266,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1751859255697975558, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1765633739275492742, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: target
@@ -3288,7 +3282,7 @@ PrefabInstance:
       objectReference: {fileID: 1048873681}
     - target: {fileID: 2989731715636705689, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2989731715636705689, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: episodeManager
@@ -3308,7 +3302,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5963434143807491845, guid: aa8891f58e1f068428f4a0a6b7c805c3, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

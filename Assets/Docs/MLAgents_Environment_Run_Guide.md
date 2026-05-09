@@ -1,6 +1,6 @@
-# ML-Agents v2 Environment and Run Guide
+# ML-Agents Environment and Run Guide
 
-This guide explains how to install the Python training environment with `requirements-mlagents-v2.txt`, start the ML-Agents trainer, open Unity, and run the training scene.
+This guide explains how to install the Python training environment with `requirements-mlagents.txt`, start the ML-Agents trainer, open Unity, and run the training scene.
 
 Project path:
 
@@ -53,7 +53,7 @@ Install with the fixed requirements file:
 
 ```cmd
 python -m pip install --upgrade pip
-pip install -r requirements-mlagents-v2.txt
+pip install -r requirements-mlagents.txt
 ```
 
 Check that ML-Agents is available:
@@ -244,5 +244,5 @@ Check:
 Check:
 
 - Conda environment uses Python `3.10.12`.
-- Install uses `requirements-mlagents-v2.txt`, not the original conflicting requirements file.
+- Install uses `requirements-mlagents.txt.
 
