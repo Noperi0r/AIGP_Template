@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="900" viewBox="0 0 1500 900">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#475569" /></marker>
+  <marker id="arrow-small" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L7,3 z" fill="#64748B" /></marker>
+  <style>
+  .title { font: 700 44px Arial, sans-serif; fill: #111827; }
+  .subtitle { font: 400 20px Arial, sans-serif; fill: #4B5563; }
+  .head { font: 700 24px Arial, sans-serif; fill: #111827; }
+  .label { font: 700 18px Arial, sans-serif; fill: #111827; }
+  .body { font: 400 18px Arial, sans-serif; fill: #374151; }
+  .small { font: 400 15px Arial, sans-serif; fill: #4B5563; }
+  .code { font: 600 16px 'Courier New', monospace; fill: #1F2937; }
+  .box { fill: #FFFFFF; stroke: #CBD5E1; stroke-width: 2; rx: 18; ry: 18; }
+  .bt { fill: #FFF7ED; stroke: #FDBA74; }
+  .rl { fill: #EFF6FF; stroke: #93C5FD; }
+  .shared { fill: #F0FDF4; stroke: #86EFAC; }
+  .exec { fill: #F8FAFC; stroke: #CBD5E1; }
+  .metric { fill: #FAF5FF; stroke: #C084FC; }
+  .arrow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  .thin { stroke: #64748B; stroke-width: 2; fill: none; marker-end: url(#arrow-small); }
+</style>
+</defs>
+<rect width="100%" height="100%" fill="#FAFAFA"/>
+<text x="70" y="75" class="title">Unity ML-Agents PPO Flow</text><text x="70" y="110" class="subtitle">RL path connected to the same combat loop used by BT agents</text><rect x="95" y="190" width="360" height="120" class="box exec"/><text x="123" y="232" class="head">Unity Combat Scene</text><text x="123" y="268" class="body">1:1 fight simulation</text>
+<text x="123" y="295" class="body">Agent state + opponent state</text><rect x="570" y="190" width="360" height="120" class="box rl"/><text x="598" y="232" class="head">Collect Observations</text><text x="598" y="268" class="body">health / distance / cooldowns</text>
+<text x="598" y="295" class="body">block + invincible states</text><rect x="1045" y="190" width="360" height="120" class="box rl"/><text x="1073" y="232" class="head">PPO Policy</text><text x="1073" y="268" class="body">maps observation vector</text>
+<text x="1073" y="295" class="body">to discrete skill action</text><rect x="1045" y="460" width="360" height="120" class="box shared"/><text x="1073" y="502" class="head">Combat Action</text><text x="1073" y="538" class="body">Attack / Block / Dodge / None</text>
+<text x="1073" y="565" class="body">sent to shared action system</text><rect x="570" y="460" width="360" height="120" class="box metric"/><text x="598" y="502" class="head">Reward + Episode Result</text><text x="598" y="538" class="body">reward hooks</text>
+<text x="598" y="565" class="body">win / loss / timeout / reset</text><rect x="95" y="460" width="360" height="120" class="box rl"/><text x="123" y="502" class="head">Training Update</text><text x="123" y="538" class="body">Python trainer updates policy</text>
+<text x="123" y="565" class="body">checkpoint / ONNX export</text><path d="M455 250 L570 250" class="arrow"/><path d="M930 250 L1045 250" class="arrow"/><path d="M1225 310 L1225 460" class="arrow"/><path d="M1045 520 L930 520" class="arrow"/><path d="M570 520 L455 520" class="arrow"/><path d="M275 460 L275 310" class="arrow"/><text x="535" y="690" class="small">Loop: Unity sends observations → PPO selects action → combat resolves action → reward updates policy</text></svg>
